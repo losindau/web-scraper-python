@@ -1,9 +1,11 @@
 from parsel import Selector
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from playwright.sync_api import sync_playwright
 import json, re
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/scrape', methods=['POST'])
 def scrape_researchgate_profile():
