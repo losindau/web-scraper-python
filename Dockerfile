@@ -1,5 +1,4 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim-buster
+FROM ubuntu:jammy
 
 # Set the working directory in the container to /app
 WORKDIR /app
@@ -7,14 +6,53 @@ WORKDIR /app
 # Add the current directory contents into the container at /app
 ADD . /app
 
+ARG DEBIAN_FRONTEND=noninteractive
+ARG TZ=America/Los_Angeles
+ARG DOCKER_IMAGE_NAME_TEMPLATE="mcr.microsoft.com/playwright/python:v%version%-jammy"
+
+# === INSTALL Python ===
+
+RUN apt-get update && \
+    # Install Python
+    apt-get install -y python3 python3-distutils curl && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3 1 && \
+    curl -sSL https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
+    python get-pip.py && \
+    rm get-pip.py && \
+    # Feature-parity with node.js base images.
+    apt-get install -y --no-install-recommends git openssh-client gpg && \
+    # clean apt cache
+    rm -rf /var/lib/apt/lists/* && \
+    # Create the pwuser
+    adduser pwuser
+
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Node.js
-RUN apt-get update && apt-get install -y curl && \
-    curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
-    apt-get install -y nodejs
+# === BAKE BROWSERS INTO IMAGE ===
 
-# Install Playwright and then its browsers
-RUN npm install -g playwright && \
-    npx playwright install
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
+# 1. Add tip-of-tree Playwright package to install its browsers.
+#    The package should be built beforehand from tip-of-tree Playwright.
+COPY ./dist/*-manylinux*.whl /tmp/
+
+# 2. Bake in browsers & deps.
+#    Browsers will be downloaded in `/ms-playwright`.
+#    Note: make sure to set 777 to the registry so that any user can access
+#    registry.
+RUN mkdir /ms-playwright && \
+    mkdir /ms-playwright-agent && \
+    cd /ms-playwright-agent && \
+    pip install virtualenv && \
+    virtualenv venv && \
+    . venv/bin/activate && \
+    # if its amd64 then install the manylinux1_x86_64 pip package
+    if [ "$(uname -m)" = "x86_64" ]; then pip install /tmp/*manylinux1_x86_64*.whl; fi && \
+    # if its arm64 then install the manylinux1_aarch64 pip package
+    if [ "$(uname -m)" = "aarch64" ]; then pip install /tmp/*manylinux_2_17_aarch64*.whl; fi && \
+    playwright mark-docker-image "${DOCKER_IMAGE_NAME_TEMPLATE}" && \
+    playwright install --with-deps && rm -rf /var/lib/apt/lists/* && \
+    rm /tmp/*.whl && \
+    rm -rf /ms-playwright-agent && \
+    chmod -R 777 /ms-playwright
