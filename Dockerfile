@@ -1,8 +1,7 @@
 FROM ubuntu:jammy
 
-WORKDIR /app
-
-ADD . /app
+# # Copy local code to the container image.
+COPY . .
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG TZ=America/Los_Angeles
