@@ -13,17 +13,22 @@ def scrape_researchgate_profile():
         return jsonify({"error": "Profile URL is missing"}), 400
 
     profile_data = {
-            "basic_info": {},
-            "about": {},
-            "co_authors": [],
-            "publications": []
-        }
+        "basic_info": {},
+        "about": {},
+        "co_authors": [],
+        "publications": []
+    }
 
     with sync_playwright() as p:
         
         browser = p.chromium.launch(headless=True, slow_mo=50)
         page = browser.new_page(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36")
-        page.goto(profileUrl)
+        page.goto(profileUrl, timeout=100000)
+
+        # Use waitForSelector to wait for specific elements to appear
+        page.wait_for_selector(".nova-legacy-e-text--size-xl")
+        page.wait_for_selector(".nova-legacy-e-avatar__img")
+
         selector = Selector(text=page.content())
         
         # Basic information
