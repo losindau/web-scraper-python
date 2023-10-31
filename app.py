@@ -23,11 +23,24 @@ def scrape_researchgate_profile():
         
         browser = p.chromium.launch(headless=True, slow_mo=50)
         page = browser.new_page(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36")
-        page.goto(profileUrl, timeout=100000)
+        page.goto(profileUrl, timeout=0)
 
-        # Use waitForSelector to wait for specific elements to appear
-        page.wait_for_selector(".nova-legacy-e-text--size-xl")
-        page.wait_for_selector(".nova-legacy-e-avatar__img")
+        # Use waitForSelector to wait for all desired elements
+        page.wait_for_selector('.nova-legacy-e-text--size-xl')
+        page.wait_for_selector('.nova-legacy-e-avatar__img')
+        page.wait_for_selector('.gtm-institution-item .nova-legacy-e-link--theme-bare')
+        page.wait_for_selector('.nova-legacy-v-entity-item__meta-data-item span')
+        page.wait_for_selector('.nova-legacy-v-entity-item__info-section-list-item span')
+        page.wait_for_selector('.nova-legacy-o-grid--horizontal-align-left .nova-legacy-o-grid__column > div:nth-child(1)')
+        page.wait_for_selector('.nova-legacy-o-stack__item .Linkify')
+        page.wait_for_selector('.nova-legacy-l-flex__item .nova-legacy-e-badge')
+        page.wait_for_selector('.nova-legacy-c-card--spacing-xl .nova-legacy-c-card__body--spacing-inherit .nova-legacy-v-person-list-item')
+        page.wait_for_selector('.nova-legacy-v-publication-item__title .nova-legacy-e-link--theme-bare')
+        page.wait_for_selector('.nova-legacy-v-publication-item__meta-data-item span')
+        page.wait_for_selector('.nova-legacy-v-person-inline-item__fullname')
+        page.wait_for_selector('.nova-legacy-e-badge--theme-solid')
+        page.wait_for_selector('.nova-legacy-v-publication-item__description')
+        page.wait_for_selector('.nova-legacy-c-button-group__item .nova-legacy-c-button')
 
         selector = Selector(text=page.content())
         
