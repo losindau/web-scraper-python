@@ -1,5 +1,5 @@
 # Use the official Playwright Docker image as a parent image
-FROM microsoft/playwright:1.16.2
+FROM mcr.microsoft.com/playwright/python:v1.21.0-focal
 
 # Set the working directory in the container
 WORKDIR /app
