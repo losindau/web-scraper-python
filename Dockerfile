@@ -1,8 +1,12 @@
-# Use the official Python image as a parent image
+# Use the official Debian-based Python image as a parent image
 FROM python:3.8-slim
 
 # Set the working directory in the container
 WORKDIR /app
+
+# Add the Debian package repositories
+RUN echo "deb http://deb.debian.org/debian/ bookworm main" > /etc/apt/sources.list
+RUN echo "deb http://deb.debian.org/debian-security bookworm-security main" >> /etc/apt/sources.list
 
 # Install necessary system libraries
 RUN apt-get update && apt-get install -y \
@@ -10,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     libnssutil3 \
     libsmime3 \
     libnspr4 \
-    libatk-1.0-0 \
+    libatk1.0-0 \
     libatk-bridge2.0-0 \
     libcups2 \
     libxkbcommon0 \
