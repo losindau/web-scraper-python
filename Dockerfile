@@ -1,5 +1,9 @@
 FROM ubuntu:jammy
 
+WORKDIR /app
+
+ADD . /app
+
 ARG DEBIAN_FRONTEND=noninteractive
 ARG TZ=America/Los_Angeles
 ARG DOCKER_IMAGE_NAME_TEMPLATE="mcr.microsoft.com/playwright/python:v%version%-jammy"
