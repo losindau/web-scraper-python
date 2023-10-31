@@ -1,11 +1,5 @@
 FROM ubuntu:jammy
 
-# Set the working directory in the container to /app
-WORKDIR /app
-
-# Add the current directory contents into the container at /app
-ADD . /app
-
 ARG DEBIAN_FRONTEND=noninteractive
 ARG TZ=America/Los_Angeles
 ARG DOCKER_IMAGE_NAME_TEMPLATE="mcr.microsoft.com/playwright/python:v%version%-jammy"
