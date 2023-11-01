@@ -1,6 +1,6 @@
 from parsel import Selector
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from playwright.sync_api import sync_playwright
 import json, re
 
@@ -8,6 +8,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/scrape": {"origins": "http://localhost:4200"}})
 
 @app.route('/scrape', methods=['POST'])
+@cross_origin(origin='*')
 def scrape_researchgate_profile():
     profileUrl = request.json.get('profileUrl')
     
