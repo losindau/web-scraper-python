@@ -5,10 +5,10 @@ from playwright.sync_api import sync_playwright
 import json, re
 
 app = Flask(__name__)
-CORS(app, resources={r"/scrape": {"origins": "http://localhost:4200"}})
+CORS(app, resources={r"/scrape": {"origins": "*"}})
 
 @app.route('/scrape', methods=['POST'])
-@cross_origin(origin='*')
+@cross_origin()
 def scrape_researchgate_profile():
     profileUrl = request.json.get('profileUrl')
     
