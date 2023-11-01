@@ -7,6 +7,17 @@ import json, re
 app = Flask(__name__)
 CORS(app, resources={r"/scrape": {"origins": "*"}})
 
+# Define a route to handle OPTIONS requests
+@app.route('/', methods=['OPTIONS'])
+def options():
+    # Set the CORS headers to allow the desired origin and headers
+    response = Flask.Response()
+    response.headers.add("Access-Control-Allow-Origin", "http://localhost:4200")  # Replace with your actual origin
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    response.headers.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+    response.headers.add("Access-Control-Allow-Credentials", "true")
+    return response, 204
+
 @app.route('/scrape', methods=['POST'])
 @cross_origin()
 def scrape_researchgate_profile():
