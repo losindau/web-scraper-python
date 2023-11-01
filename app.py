@@ -1,24 +1,17 @@
 from parsel import Selector
-from flask import Flask, request, jsonify
-from flask_cors import CORS, cross_origin
+from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS
 from playwright.sync_api import sync_playwright
 import json, re
 
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/scrape', methods=['POST'])
-@cross_origin( 
-origins = '*',  
-methods = ['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT'],  
-headers = None,  
-supports_credentials = False,  
-max_age = None,  
-send_wildcard = True,  
-always_send = True,  
-automatic_options = False
-)
+@app.route('/scrape', methods=['POST', 'OPTIONS'])
 def scrape_researchgate_profile():
+    if request.method == "OPTIONS":
+        return _build_cors_preflight_response()
+
     profileUrl = request.json.get('profileUrl')
     
     if profileUrl is None:
@@ -99,7 +92,18 @@ def scrape_researchgate_profile():
 
         browser.close()
 
-    return jsonify(profile_data)
+    return _corsify_actual_response(jsonify(profile_data))
+
+def _build_cors_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
+
+def _corsify_actual_response(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
