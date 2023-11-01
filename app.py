@@ -1,5 +1,5 @@
 from parsel import Selector
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from flask_cors import CORS, cross_origin
 from playwright.sync_api import sync_playwright
 import json, re
@@ -11,8 +11,8 @@ CORS(app, resources={r"/scrape": {"origins": "*"}})
 @app.route('/', methods=['OPTIONS'])
 def options():
     # Set the CORS headers to allow the desired origin and headers
-    response = Flask.Response()
-    response.headers.add("Access-Control-Allow-Origin", "http://localhost:4200")  # Replace with your actual origin
+    response = Response()
+    response.headers.add("Access-Control-Allow-Origin", "http://localhost:4200")
     response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
     response.headers.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
     response.headers.add("Access-Control-Allow-Credentials", "true")
