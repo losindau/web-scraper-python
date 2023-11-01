@@ -1,25 +1,23 @@
 from parsel import Selector
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from playwright.sync_api import sync_playwright
 import json, re
 
 app = Flask(__name__)
-CORS(app, resources={r"/scrape": {"origins": "*"}})
-
-# Define a route to handle OPTIONS requests
-@app.route('/', methods=['OPTIONS'])
-def options():
-    # Set the CORS headers to allow the desired origin and headers
-    response = Response()
-    response.headers.add("Access-Control-Allow-Origin", "http://localhost:4200")
-    response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
-    response.headers.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
-    response.headers.add("Access-Control-Allow-Credentials", "true")
-    return response, 204
+CORS(app)
 
 @app.route('/scrape', methods=['POST'])
-@cross_origin()
+@cross_origin( 
+origins = '*',  
+methods = ['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT'],  
+headers = None,  
+supports_credentials = False,  
+max_age = None,  
+send_wildcard = True,  
+always_send = True,  
+automatic_options = False
+)
 def scrape_researchgate_profile():
     profileUrl = request.json.get('profileUrl')
     
